@@ -9,6 +9,7 @@
       />
       <button @click="sendMessage">Send</button>
     </div>
+    <button @click="getMessages">Get Messages</button>
     <ul class="message-list">
       <li v-for="(message, index) in messages" :key="index">{{ message }}</li>
     </ul>
@@ -17,29 +18,46 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { useRouter } from "vue-router";
-import { app } from "../middleware/firebase.js";
 
-const router = useRouter();
+import { sendMessage as s_message } from "~/server/songService";
+import { getMessages as g_messages } from "~/server/analyticsService";
+
+const runtimeConfig = useRuntimeConfig();
+const firebaseConfig = {
+  apiKey: runtimeConfig.public.apiKey,
+  authDomain: runtimeConfig.public.authDomain,
+  projectId: runtimeConfig.public.projectId,
+  storageBucket: runtimeConfig.public.storageBucket,
+  messagingSenderId: runtimeConfig.public.messagingSenderId,
+  appId: runtimeConfig.public.appId,
+  measurementId: runtimeConfig.public.measurementId,
+};
+const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
 const messages = ref([]);
 const newMessage = ref("");
 
-// Check authentication state when component mounts
 onMounted(() => {
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      router.push("/");
+      await navigateTo("/");
     }
   });
 });
 
-const sendMessage = () => {
+const sendMessage = async () => {
   if (newMessage.value.trim()) {
-    messages.value.push(newMessage.value);
+    await s_message("token", newMessage.value);
     newMessage.value = "";
   }
+};
+const getMessages = async () => {
+  await g_messages("token").then((messages) => {
+    messages.value = messages;
+  });
 };
 </script>
 
@@ -71,7 +89,6 @@ button {
 .message-list li {
   padding: 10px;
   margin-bottom: 5px;
-  background-color: #f1f1f1;
   border-radius: 4px;
 }
 </style>

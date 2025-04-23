@@ -5,14 +5,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  getRedirectResult,
-  GoogleAuthProvider,
-  signInWithRedirect,
-} from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 const runtimeConfig = useRuntimeConfig();
 const firebaseConfig = {
@@ -28,36 +23,20 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const loginWithGoogle = async () => {
-  try {
-    await signInWithRedirect(auth, provider);
-  } catch (error) {
-    console.error("Error signing in with Google", error);
-  }
+  console.log("Logging in with Google...");
+  await signInWithPopup(auth, provider)
+    .then((result) => {
+      let token = result.user.getIdToken();
+      let user = result.user;
+      console.log("User signed in:", result.user);
+    })
+    .catch((error) => {
+      console.error("Error signing in with Google:", error);
+    });
+  await navigateTo("/messages");
 };
 
 onMounted(() => {
-  getRedirectResult(auth)
-    .then((result) => {
-      if (result) {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential?.accessToken;
-        const user = result.user;
-        console.log("signed in", user, token);
-      }
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      const email = error.customData?.email;
-      const credential = GoogleAuthProvider.credentialFromError(error);
-      console.error(
-        "Error getting redirect result",
-        errorCode,
-        errorMessage,
-        email,
-        credential
-      );
-    });
   return {
     provide: {
       auth,
