@@ -21,9 +21,6 @@ import { ref, onMounted } from "vue";
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-import { sendMessage as s_message } from "~/server/songService";
-import { getMessages as g_messages } from "~/server/analyticsService";
-
 const runtimeConfig = useRuntimeConfig();
 const firebaseConfig = {
   apiKey: runtimeConfig.public.apiKey,
@@ -39,6 +36,31 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const messages = ref([]);
 const newMessage = ref("");
+const { gatewayUrl } = useRuntimeConfig().public;
+const getMessages = async () => {
+  const user = auth.currentUser;
+  const token = user ? await user.getIdToken() : null;
+  const { data } = await $fetch(`${gatewayUrl}/api/analytics/messages`, {
+    method: "GET",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  }).catch((error) => {
+    console.error("Error getting messages:", error);
+  });
+  messages.value = data?.value || [];
+};
+
+const sendMessage = async () => {
+  if (!newMessage.value.trim()) return;
+  const user = auth.currentUser;
+  const token = user ? await user.getIdToken() : null;
+  await $fetch(`${gatewayUrl}/api/song/message/${newMessage.value}`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  }).catch((error) => {
+    console.error("Error sending message:", error);
+  });
+  newMessage.value = "";
+};
 
 onMounted(() => {
   onAuthStateChanged(auth, async (user) => {
@@ -47,18 +69,6 @@ onMounted(() => {
     }
   });
 });
-
-const sendMessage = async () => {
-  if (newMessage.value.trim()) {
-    await s_message("token", newMessage.value);
-    newMessage.value = "";
-  }
-};
-const getMessages = async () => {
-  await g_messages("token").then((messages) => {
-    messages.value = messages;
-  });
-};
 </script>
 
 <style scoped>
