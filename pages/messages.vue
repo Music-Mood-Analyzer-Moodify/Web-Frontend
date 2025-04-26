@@ -10,9 +10,12 @@
       <button @click="sendMessage">Send</button>
     </div>
     <button @click="getMessages">Get Messages</button>
-    <ul class="message-list">
-      <li v-for="(message, index) in messages" :key="index">{{ message }}</li>
-    </ul>
+    <div v-if="messages.length !== 0">
+      <h2>Unique Messages:</h2>
+      <ul class="message-list">
+        <li v-for="(message, index) in messages" :key="index">{{ message }}</li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -20,8 +23,10 @@
 import { ref, onMounted } from "vue";
 import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { setHeaders } from "~/composables/httpUtils";
 
 const runtimeConfig = useRuntimeConfig();
+const origin = useRequestURL().origin;
 const firebaseConfig = {
   apiKey: runtimeConfig.public.apiKey,
   authDomain: runtimeConfig.public.authDomain,
@@ -40,13 +45,18 @@ const { gatewayUrl } = useRuntimeConfig().public;
 const getMessages = async () => {
   const user = auth.currentUser;
   const token = user ? await user.getIdToken() : null;
-  const { data } = await $fetch(`${gatewayUrl}/api/analytics/messages`, {
+  const data = await $fetch(`${gatewayUrl}/api/analytics/messages`, {
     method: "GET",
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    headers: setHeaders(token, origin),
   }).catch((error) => {
     console.error("Error getting messages:", error);
   });
-  messages.value = data?.value || [];
+
+  for (const item of data) {
+    if (!messages.value.includes(item["message"])) {
+      messages.value.push(item["message"]);
+    }
+  }
 };
 
 const sendMessage = async () => {
@@ -55,7 +65,7 @@ const sendMessage = async () => {
   const token = user ? await user.getIdToken() : null;
   await $fetch(`${gatewayUrl}/api/song/message/${newMessage.value}`, {
     method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    headers: setHeaders(token, origin),
   }).catch((error) => {
     console.error("Error sending message:", error);
   });
