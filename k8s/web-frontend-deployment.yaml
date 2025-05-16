@@ -6,8 +6,8 @@ spec:
   selector:
     app: web-frontend
   ports:
-    - port: 9099
-      targetPort: 8080
+    - port: 8079
+      targetPort: 3000
   type: LoadBalancer
 ---
 apiVersion: apps/v1
@@ -32,46 +32,46 @@ spec:
           image: k3d-moodify:5000/web_frontend:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 3000
           resources:
             limits:
               memory: 512Mi
               cpu: "1"
           env:
-            - name: FIREBASE_API_KEY
+            - name: NUXT_PUBLIC_FIREBASE_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: web-frontend-secret
                   key: firebase-api-key
-            - name: FIREBASE_AUTH_DOMAIN
+            - name: NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN
               valueFrom:
                 secretKeyRef:
                   name: web-frontend-secret
                   key: firebase-auth-domain
-            - name: FIREBASE_PROJECT_ID
+            - name: NUXT_PUBLIC_FIREBASE_PROJECT_ID
               valueFrom:
                 secretKeyRef:
                   name: web-frontend-secret
                   key: firebase-project-id
-            - name: FIREBASE_STORAGE_BUCKET
+            - name: NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET
               valueFrom:
                 secretKeyRef:
                   name: web-frontend-secret
                   key: firebase-storage-bucket
-            - name: FIREBASE_MESSAGING_SENDER_ID
+            - name: NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
               valueFrom:
                 secretKeyRef:
                   name: web-frontend-secret
                   key: firebase-messaging-sender-id
-            - name: FIREBASE_APP_ID
+            - name: NUXT_PUBLIC_FIREBASE_APP_ID
               valueFrom:
                 secretKeyRef:
                   name: web-frontend-secret
                   key: firebase-app-id
-            - name: FIREBASE_MEASUREMENT_ID
+            - name: NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID
               valueFrom:
                 secretKeyRef:
                   name: web-frontend-secret
                   key: firebase-measurement-id
-            - name: GATEWAYURL
-              value: "http://moodify-gateway-service:8080"
+            - name: NUXT_PUBLIC_GATEWAY_URL
+              value: "http://gateway-service:8080"
