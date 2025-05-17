@@ -16,7 +16,7 @@
 const { gatewayUrl } = useRuntimeConfig().public;
 const songs = ref([]);
 const getMessages = async () => {
-  const data = await $fetch(`${gatewayUrl}/api/song/song`, {
+  const data = await $fetch(`${gatewayUrl}/api/song/allSongs`, {
     method: "GET",
     query: {
       page: 0,
