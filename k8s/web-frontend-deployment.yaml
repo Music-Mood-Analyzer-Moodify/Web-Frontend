@@ -2,7 +2,11 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: web-frontend-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: nginx
   rules:
   # - host: localhost
   #   http:
@@ -84,8 +88,8 @@ spec:
     spec:
       containers:
         - name: web-frontend
-          # image: judahlit/moodify_web_frontend:latest
-          image: k3d-moodify:5000/web_frontend:latest
+          image: judahlit/moodify_web_frontend:latest
+          # image: k3d-moodify:5000/web-frontend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
@@ -99,45 +103,45 @@ spec:
           env:
             - name: NUXT_PUBLIC_FIREBASE_API_KEY
               valueFrom:
-                secretKeyRef:
-                  name: web-frontend-secret
+                configMapKeyRef:
+                  name: web-frontend-config
                   key: firebase-api-key
             - name: NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN
               valueFrom:
-                secretKeyRef:
-                  name: web-frontend-secret
+                configMapKeyRef:
+                  name: web-frontend-config
                   key: firebase-auth-domain
             - name: NUXT_PUBLIC_FIREBASE_PROJECT_ID
               valueFrom:
-                secretKeyRef:
-                  name: web-frontend-secret
+                configMapKeyRef:
+                  name: web-frontend-config
                   key: firebase-project-id
             - name: NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET
               valueFrom:
-                secretKeyRef:
-                  name: web-frontend-secret
+                configMapKeyRef:
+                  name: web-frontend-config
                   key: firebase-storage-bucket
             - name: NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
               valueFrom:
-                secretKeyRef:
-                  name: web-frontend-secret
+                configMapKeyRef:
+                  name: web-frontend-config
                   key: firebase-messaging-sender-id
             - name: NUXT_PUBLIC_FIREBASE_APP_ID
               valueFrom:
-                secretKeyRef:
-                  name: web-frontend-secret
+                configMapKeyRef:
+                  name: web-frontend-config
                   key: firebase-app-id
             - name: NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID
               valueFrom:
-                secretKeyRef:
-                  name: web-frontend-secret
+                configMapKeyRef:
+                  name: web-frontend-config
                   key: firebase-measurement-id
             - name: NUXT_PUBLIC_GATEWAY_URL
-              value: 
+              value: http://131.145.78.23:8080
           readinessProbe:
             tcpSocket:
               port: 3000
-            initialDelaySeconds: 60
+            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
             successThreshold: 1
