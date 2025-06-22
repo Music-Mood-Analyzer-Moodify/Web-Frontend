@@ -1,6 +1,33 @@
 <template>
   <div>
-    <h1>Log-in / Register</h1>
+    <div>
+      <h1>Register</h1>
+      <form>
+        <div class="form-group">
+          <input
+            v-model="register_email"
+            type="email"
+            placeholder="Email"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <input
+            v-model="register_password"
+            type="password"
+            placeholder="Password"
+            required
+          />
+        </div>
+        <p .register_error>
+          {{ register_error }}
+        </p>
+        <button @click.prevent="registerWithCredentials">
+          Log in with credentials
+        </button>
+      </form>
+    </div>
+    <h1>Log-in</h1>
     <div>
       <h2>Log in with credentials</h2>
       <form>
@@ -33,32 +60,12 @@
       <p>Click the button below to log in with your Google account.</p>
       <button @click="loginWithGoogle">Log in with Google</button>
     </div>
+  </div>
+  <div>
     <div>
-      <h2>Register with credentials</h2>
-      <form>
-        <div class="form-group">
-          <input
-            v-model="register_email"
-            type="email"
-            placeholder="Email"
-            required
-          />
-        </div>
-        <div class="form-group">
-          <input
-            v-model="register_password"
-            type="password"
-            placeholder="Password"
-            required
-          />
-        </div>
-        <p .register_error>
-          {{ register_error }}
-        </p>
-        <button @click.prevent="registerWithCredentials">
-          Log in with credentials
-        </button>
-      </form>
+      <h1>Log out</h1>
+      <p>Click the button below to log out.</p>
+      <button @click="logout">Log out</button>
     </div>
   </div>
 </template>
@@ -93,7 +100,7 @@ const loginWithGoogle = async () => {
       let token = result.user.getIdToken();
       let user = result.user;
       console.log("User signed in:", result.user);
-      await navigateTo("/messages");
+      await navigateTo("/songs");
     })
     .catch((error) => {
       console.error("Error signing in with Google:", error);
@@ -111,7 +118,7 @@ const loginWithCredentials = async () => {
   )
     .then(async (result) => {
       console.log("User signed in:", result.user);
-      await navigateTo("/messages");
+      await navigateTo("/songs");
     })
     .catch((error) => {
       console.error("Error signing in with credentials:", error);
@@ -131,11 +138,22 @@ const registerWithCredentials = async () => {
   )
     .then(async (result) => {
       console.log("User registered:", result.user);
-      await navigateTo("/messages");
+      await navigateTo("/songs");
     })
     .catch((error) => {
       console.error("Error registering with credentials:", error);
       register_error.value = error.message;
+    });
+};
+
+const logout = async () => {
+  await auth.signOut()
+    .then(() => {
+      console.log("User signed out");
+      navigateTo("/");
+    })
+    .catch((error) => {
+      console.error("Error signing out:", error);
     });
 };
 
@@ -146,6 +164,7 @@ onMounted(() => {
       loginWithGoogle,
       loginWithCredentials,
       registerWithCredentials,
+      logout,
     },
   };
 });

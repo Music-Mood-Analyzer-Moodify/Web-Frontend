@@ -52,6 +52,20 @@ spec:
         target:
           type: Utilization
           averageUtilization: 70
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 300 
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 30
+      selectPolicy: Max
+    scaleDown:
+      stabilizationWindowSeconds: 600
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 30
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -77,11 +91,11 @@ spec:
             - containerPort: 3000
           resources:
             requests:
-              memory: 64Mi
-              cpu: "1"
+              memory: 256Mi
+              cpu: 200m
             limits:
               memory: 512Mi
-              cpu: "1"
+              cpu: 350m
           env:
             - name: NUXT_PUBLIC_FIREBASE_API_KEY
               valueFrom:
@@ -119,4 +133,12 @@ spec:
                   name: web-frontend-secret
                   key: firebase-measurement-id
             - name: NUXT_PUBLIC_GATEWAY_URL
-              value: "http://<gateway-public-ip>" # Replace <gateway-public-ip> with the actual IP or domain
+              value: 
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
