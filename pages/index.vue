@@ -81,7 +81,6 @@ import {
 } from "firebase/auth";
 
 const runtimeConfig = useRuntimeConfig();
-console.log("Runtime Config:", runtimeConfig.public);
 const firebaseConfig = {
   apiKey: runtimeConfig.public.apiKey,
   authDomain: runtimeConfig.public.authDomain,
