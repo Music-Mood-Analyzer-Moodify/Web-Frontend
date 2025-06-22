@@ -25,7 +25,9 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ${{ secrets.REGISTRY_USERNAME }}/moodify_web_frontend:latest
+          tags: |
+            ${{ secrets.REGISTRY_USERNAME }}/moodify_web_frontend:latest
+            ${{ secrets.REGISTRY_USERNAME }}/moodify_web_frontend:${{ github.sha }}
 
       - name: Azure Login
         uses: azure/login@v2
@@ -49,5 +51,13 @@ jobs:
           manifests: |
             k8s
           strategy: 'basic'
-          images: '${{ secrets.REGISTRY_USERNAME }}/moodify_web_frontend:latest'
+          images: '${{ secrets.REGISTRY_USERNAME }}/moodify_web_frontend:${{ github.sha }}'
           pull-images: true
+
+      - name: Rollout new version
+        run: |
+          kubectl get pods -o wide
+          kubectl get hpa web-frontend-hpa
+          kubectl describe hpa web-frontend-hpa
+          kubectl get deployment web-frontend-deployment -o yaml
+          kubectl get service web-frontend-service -o yaml
