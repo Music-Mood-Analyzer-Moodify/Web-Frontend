@@ -8,5 +8,5 @@
 
 <script setup>
 const runtimeConfig = useRuntimeConfig();
-console.log("Runtime Config:", runtimeConfig.public);
+console.log("test!");
 </script>
