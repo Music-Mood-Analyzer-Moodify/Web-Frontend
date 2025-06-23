@@ -4,13 +4,13 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       gatewayUrl: process.env.NUXT_PUBLIC_GATEWAY_URL,
-      apiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,
-      authDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-      projectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
-      storageBucket: process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-      appId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
-      measurementId: process.env.NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+      apiKey: "AIzaSyCFtnq5pflWqMnfoSjLIq04M1sUQgpsDTI",
+      authDomain: "moodify-web-frontend.firebaseapp.com",
+      projectId: "moodify-web-frontend",
+      storageBucket: "moodify-web-frontend.firebasestorage.app",
+      messagingSenderId: "106664090264",
+      appId: "1:106664090264:web:4afe8050770725ae978eed",
+      measurementId: "G-0XX6R3PFGC",
     },
   },
 });
