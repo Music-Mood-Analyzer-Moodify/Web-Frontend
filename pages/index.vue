@@ -23,7 +23,7 @@
           {{ register_error }}
         </p>
         <button @click.prevent="registerWithCredentials">
-          Log in with credentials
+          Register
         </button>
       </form>
     </div>
