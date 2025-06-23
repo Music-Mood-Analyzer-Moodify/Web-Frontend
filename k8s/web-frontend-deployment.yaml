@@ -102,40 +102,19 @@ spec:
               cpu: 350m
           env:
             - name: NUXT_PUBLIC_FIREBASE_API_KEY
-              valueFrom:
-                configMapKeyRef:
-                  name: web-frontend-config
-                  key: firebase-api-key
+              value: AIzaSyCFtnq5pflWqMnfoSjLIq04M1sUQgpsDTI
             - name: NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-              valueFrom:
-                configMapKeyRef:
-                  name: web-frontend-config
-                  key: firebase-auth-domain
+              value: moodify-web-frontend.firebaseapp.com
             - name: NUXT_PUBLIC_FIREBASE_PROJECT_ID
-              valueFrom:
-                configMapKeyRef:
-                  name: web-frontend-config
-                  key: firebase-project-id
+              value: moodify-web-frontend
             - name: NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-              valueFrom:
-                configMapKeyRef:
-                  name: web-frontend-config
-                  key: firebase-storage-bucket
+              value: moodify-web-frontend.firebasestorage.app
             - name: NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-              valueFrom:
-                configMapKeyRef:
-                  name: web-frontend-config
-                  key: firebase-messaging-sender-id
+              value: "106664090264"
             - name: NUXT_PUBLIC_FIREBASE_APP_ID
-              valueFrom:
-                configMapKeyRef:
-                  name: web-frontend-config
-                  key: firebase-app-id
+              value: "1:106664090264:web:4afe8050770725ae978eed"
             - name: NUXT_PUBLIC_FIREBASE_MEASUREMENT_ID
-              valueFrom:
-                configMapKeyRef:
-                  name: web-frontend-config
-                  key: firebase-measurement-id
+              value: "G-0XX6R3PFGC"
             - name: NUXT_PUBLIC_GATEWAY_URL
               value: http://131.145.78.23:8080
           readinessProbe:
